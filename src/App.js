@@ -4,6 +4,7 @@ import { useSelector, useDispatch} from 'react-redux'
 import { selectUser, login, logout } from './features/userSlice'
 import {auth} from './firebase/firebase'
 import Login from './components/Login';
+import Main from './components/Main'
 
 const App = () => {
   const user = useSelector(selectUser)
@@ -26,7 +27,9 @@ const App = () => {
 
   return (
     <>
-      <Login />
+      {
+        user ? <Main /> : <Login />
+      }
     </>
   )
 }
