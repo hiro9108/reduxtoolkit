@@ -4,10 +4,11 @@ import { MicNone } from '@material-ui/icons'
 import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import FlipMove from 'react-flip-move'
+import { Flipped } from 'react-flip-toolkit'
 
 import { selectChatId, selectChatName } from '../features/chatSlice'
 import { selectUser } from '../features/userSlice'
-import firebase, {db} from '../firebase/firebase'
+import firebase, { db } from '../firebase/firebase'
 import Message from './Message'
 
 const ChatContainer = styled.div`
@@ -65,79 +66,80 @@ const ChatSubmitButton = styled.button`
 `
 
 const Chat = () => {
-    const [input, setInput] = useState('')
-    const [messages, setMessages] = useState([])
+  const [input, setInput] = useState('')
+  const [messages, setMessages] = useState([])
 
-    const chatName = useSelector(selectChatName)
-    const chatId = useSelector(selectChatId)
-    const user = useSelector(selectUser)
+  const chatName = useSelector(selectChatName)
+  const chatId = useSelector(selectChatId)
+  const user = useSelector(selectUser)
 
-    useEffect(() => {
-        if(chatId){
-            db
-                .collection("chats")
-                .doc(chatId)
-                .collection("message")
-                .orderBy("timestamp", "desc")
-                .onSnapshot((snapshot) => setMessages(
-                    snapshot.docs.map((doc) => ({
-                        id: doc.id,
-                        data: doc.data()
-                    }))
-                ))
-        }
-    }, [chatId])
-
-    const sendMessage = (event) => {
-        event.preventDefault()
-        db
-            .collection("chats")
-            .doc(chatId)
-            .collection("messages")
-            .add({
-                uid: user.uid,
-                photo: user.photo,
-                email: user.email,
-                displayName: user.displayName,
-                message: input,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            })
-
-        setInput("")
+  useEffect(() => {
+    if (chatId) {
+      db.collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .orderBy('timestamp', 'desc')
+        .onSnapshot((snapshot) =>
+          setMessages(
+            snapshot.docs.map((doc) => ({
+              id: doc.id,
+              data: doc.data(),
+            }))
+          )
+        )
     }
+  }, [chatId])
 
-    return(
-        <ChatContainer>
-            <ChatHeaderContainer>
-                <ChatHeader>
-                    Room: <ChatName>{chatName}</ChatName>
-                </ChatHeader>
-            </ChatHeaderContainer>
-            <ChatMessagesContainer>
-                <FlipMove>
-                    {
-                        messages.map(({ id, data }) => (
-                            <Message key={id} contents={data} />
-                        ))
-                    }
-                </FlipMove>
-            </ChatMessagesContainer>
-            <ChatInputContainer>
-                <ChatForm>
-                    <ChatInput
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder="Type a message"
-                        type="text"
-                        disabled={!chatId}
-                    />
-                    <ChatSubmitButton onClick={sendMessage}>
-                        Send Message
-                    </ChatSubmitButton>
-                </ChatForm>
-            </ChatInputContainer>
-        </ChatContainer>
-    )
+  const sendMessage = (event) => {
+    event.preventDefault()
+    db.collection('chats').doc(chatId).collection('messages').add({
+      uid: user.uid,
+      photo: user.photo,
+      email: user.email,
+      displayName: user.displayName,
+      message: input,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    })
+
+    setInput('')
+  }
+
+  return (
+    <ChatContainer>
+      <ChatHeaderContainer>
+        <ChatHeader>
+          Room: <ChatName>{chatName}</ChatName>
+        </ChatHeader>
+      </ChatHeaderContainer>
+      <ChatMessagesContainer>
+        <Flipped>
+          <>
+            {messages.map(({ id, data }) => {
+              console.log(data)
+              return <Message key={id} contents={data} />
+            })}
+          </>
+        </Flipped>
+      </ChatMessagesContainer>
+      <ChatInputContainer>
+        <ChatForm>
+          <ChatInput
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder='Type a message'
+            type='text'
+            disabled={!chatId}
+          />
+          <ChatSubmitButton onClick={sendMessage}>
+            Send Message
+          </ChatSubmitButton>
+        </ChatForm>
+        <IconButton>
+          <MicNone />
+        </IconButton>
+      </ChatInputContainer>
+    </ChatContainer>
+  )
 }
 
 export default Chat
