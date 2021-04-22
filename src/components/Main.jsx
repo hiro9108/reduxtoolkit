@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import Sidebar from './SideBar';
-//chat component
+import Chat from './Chat'
 
 const MainContainer = styled.div`
     display: flex
@@ -11,6 +11,7 @@ const MainContainer = styled.div`
 const Main = () => (
     <MainContainer>
         <Sidebar />
+        <Chat />
     </MainContainer>
 )
 
