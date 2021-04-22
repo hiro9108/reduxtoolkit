@@ -114,10 +114,9 @@ const Chat = () => {
       <ChatMessagesContainer>
         <Flipped>
           <>
-            {messages.map(({ id, data }) => {
-              console.log(data)
-              return <Message key={id} contents={data} />
-            })}
+            {messages.map(({ id, data }) => 
+                <Message key={id} contents={data} />
+            )}
           </>
         </Flipped>
       </ChatMessagesContainer>
