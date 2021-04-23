@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react'
+import React from 'react'
 import { Avatar } from '@material-ui/core'
 import { useSelector } from 'react-redux'
 import styled from 'styled-components'
@@ -14,12 +14,12 @@ const MessageContainer = styled.div`
   justify-content: space-between;
   margin: 15px;
 
-  ${({ sender }) =>
-    sender &&
+  ${({ $sender }) =>
+    $sender &&
     `
-    margin-left: auto;
-  `}
-`;
+            margin-left: auto;
+        `}
+`
 
 const MessageBubble = styled.p`
   background-color: #f3f3f5;
@@ -29,20 +29,22 @@ const MessageBubble = styled.p`
   margin: 10px;
   margin-right: auto;
 
-  ${({ sender }) =>
-    sender &&
+  ${({ $sender }) =>
+    $sender &&
     `
     background-color: #3cabfa;
     color: white;
   `}
-`;
+`
 
 const AvatarContainer = styled(Avatar)`
-  ${({ sender }) => sender &&`
+  ${({ sender }) =>
+    sender &&
+    `
     order: 1;
     margin: 15px;
   `}
-`;
+`
 
 const TimeStamp = styled.small`
   color: gray;
@@ -50,23 +52,19 @@ const TimeStamp = styled.small`
   font-size: 8px;
   bottom: -5px;
   right: 0;
-`;
+`
 
-const Message = forwardRef(
-    ({ id, contents: { timestamp, email, photo, message } }, ref) => {
-        const user = useSelector(selectUser)
-        const isUser = user.email === email
+const Message = ({ id, contents: { timestamp, email, photo, message } }) => {
+  const user = useSelector(selectUser)
+  const isUser = user.email === email
 
-        return(
-            <MessageContainer ref={ref} sender={isUser}>
-                <AvatarContainer src={photo} sender={isUser} />
-                <MessageBubble sender={isUser}>{message}</MessageBubble>
-                <TimeStamp>
-                    {timeago.format(new Date(timestamp?.toDate()))}
-                </TimeStamp>
-            </MessageContainer>
-        )
-    }
-)
+  return (
+    <MessageContainer $sender={isUser}>
+      <AvatarContainer src={photo} sender={isUser ? 1 : 0} />
+      <MessageBubble $sender={isUser}>{message}</MessageBubble>
+      <TimeStamp>{timeago.format(new Date(timestamp?.toDate()))}</TimeStamp>
+    </MessageContainer>
+  )
+}
 
 export default Message
